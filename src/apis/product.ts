@@ -1,6 +1,10 @@
 import axios from 'axios'
 import type { AxiosResponse } from 'axios'
-import type { GetProductsResponse } from '../types/product'
+import type { 
+  GetProductsResponse,
+  CreateProductResponse,
+  CreateProductParams
+} from '../types/product'
 
 const API_BASE = import.meta.env.VITE_API_BASE;
 const API_PATH = import.meta.env.VITE_API_PATH;
@@ -33,3 +37,8 @@ productApi.interceptors.response.use(
 )
 
 export const apiGetProducts = (): Promise<AxiosResponse<GetProductsResponse>> => productApi.get(`/api/${API_PATH}/admin/products`)
+
+export const apiCreateProduct = (params: CreateProductParams): Promise<AxiosResponse<CreateProductResponse>> =>
+  productApi.post(`/api/${API_PATH}/admin/product`, {
+    data: params,
+  })
