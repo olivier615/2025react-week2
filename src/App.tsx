@@ -2,7 +2,6 @@ import { useEffect, useState, useRef } from "react";
 import type { UserLogInFormData } from "./types/user";
 import type {
   ProductData,
-  CreateProductParams
 } from "./types/product"
 import axios from "axios";
 import * as bootstrap from 'bootstrap'
@@ -12,8 +11,9 @@ import {
 } from "./apis/user"
 import {
   apiGetProducts,
-  apiCreateProduct
 } from "./apis/product";
+
+import { ProductModal } from './components/ProductModal'
 
 
 function App() {
@@ -22,24 +22,10 @@ function App() {
     password: "",
   })
 
-  const [editProduct, setEditProduct] = useState<CreateProductParams>({
-    title: '',
-    category: '',
-    origin_price: 0,
-    price: 0,
-    unit: '',
-    description: '',
-    content: '',
-    is_enabled: 1,
-    imageUrl: '',
-    imagesUrl: [],
-  })
-
   const [isAuth, setIsAuth] = useState<boolean>(true)
   const [products, setProducts] = useState<ProductData[]>([])
   const [tempProduct, setTempProduct] = useState<ProductData | null>(null)
   const productModalRef = useRef<bootstrap.Modal | null>(null)
-  const [imageUrlInput, setImageUrlInput] = useState<string>('')
 
   const handleSubmit = async (
     event: React.ChangeEvent<HTMLFormElement>
@@ -89,61 +75,8 @@ function App() {
     productModalRef.current?.show()
   }
 
-  const handleModalInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { id, value } = event.target;
-    setEditProduct({
-      ...editProduct,
-      [id]: id === 'origin_price' || id === 'price'
-      ? Number(value)
-      : value
-    })
-  }
-
-  const handleIsEnabled = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEditProduct({
-      ...editProduct,
-      is_enabled: event.target.checked ? 1 : 0
-    })
-  }
-
-  const isURL = (url: string): boolean => {
-    const httpsOnlyRegex = /^https:\/\//i
-    return httpsOnlyRegex.test(url)
-  }
-
-  const addNewUrl = () => {
-    if (imageUrlInput === '') return
-    if (!isURL(imageUrlInput)) {
-      alert('錯誤的 Url')
-    } else {
-      setEditProduct({
-        ...editProduct,
-        imagesUrl: [
-          ...editProduct.imagesUrl,
-          imageUrlInput
-        ]
-      })
-      setImageUrlInput('')
-    }
-  }
-
-  const deleteUrl = (index: number) => {
-    setEditProduct({
-      ...editProduct,
-      imagesUrl: editProduct.imagesUrl.filter((_: string, i: number) => i !== index),
-    })
-  }
-
-
-  const onLook = async () => {
-    console.log(editProduct)
-    try {
-      console.log("final", editProduct)
-      const response = await apiCreateProduct(editProduct)
-      console.log(response.data)
-    } catch (error) {
-      console.log(error)
-    }
+  const closeModal = async () => {
+    productModalRef.current?.hide()
   }
 
   useEffect(() => {
@@ -159,12 +92,7 @@ function App() {
     })
   }, [])
 
-  useEffect(() => {
-    setEditProduct({
-      ...editProduct,
-      imageUrl: editProduct.imagesUrl.length > 0 ? editProduct.imagesUrl[0] : ''
-    })
-  }, [editProduct.imagesUrl.length])
+
 
   return (
     <>
@@ -307,6 +235,8 @@ function App() {
         </div>
       )}
       {/* productModal 表單 */}
+      <ProductModal closeModal={closeModal} />
+      {/*
       <div
         id="productModal"
         className="modal fade"
@@ -481,7 +411,8 @@ function App() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
+      
     </>
   );
 }
