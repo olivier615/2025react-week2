@@ -3,7 +3,8 @@ import type { AxiosResponse } from 'axios'
 import type { 
   GetProductsResponse,
   CreateProductResponse,
-  CreateProductParams
+  CreateProductParams,
+  DeleteProductResponse
 } from '../types/product'
 
 const API_BASE = import.meta.env.VITE_API_BASE;
@@ -42,3 +43,6 @@ export const apiCreateProduct = (params: CreateProductParams): Promise<AxiosResp
   productApi.post(`/api/${API_PATH}/admin/product`, {
     data: params,
   })
+
+  export const apiDeleteProduct = (productId: string): Promise<AxiosResponse<DeleteProductResponse>> =>
+  productApi.delete(`/api/${API_PATH}/admin/product/${productId}`)
