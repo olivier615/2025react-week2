@@ -78,6 +78,7 @@ function App() {
   const checkLoginStatus = async () => {
     try {
       const response = await apiCheckLoginStatus()
+      console.log(response.data)
       if (!response.data.success) setIsAuth(false)
     } catch (error) {
       console.log(error)
@@ -90,10 +91,11 @@ function App() {
 
   const handleModalInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = event.target;
-    console.log(event.target, id, value)
     setEditProduct({
       ...editProduct,
-      [id]: value,
+      [id]: id === 'origin_price' || id === 'price'
+      ? Number(value)
+      : value
     })
   }
 
@@ -136,6 +138,7 @@ function App() {
   const onLook = async () => {
     console.log(editProduct)
     try {
+      console.log("final", editProduct)
       const response = await apiCreateProduct(editProduct)
       console.log(response.data)
     } catch (error) {
@@ -143,7 +146,6 @@ function App() {
     }
   }
 
-// "origin_price 型別錯誤", "price 型別錯誤"
   useEffect(() => {
     const token = document.cookie.replace(
       /(?:(?:^|.*;\s*)hexToken\s*=\s*([^;]*).*$)|^.*$/,
@@ -156,6 +158,13 @@ function App() {
       keyboard: false
     })
   }, [])
+
+  useEffect(() => {
+    setEditProduct({
+      ...editProduct,
+      imageUrl: editProduct.imagesUrl.length > 0 ? editProduct.imagesUrl[0] : ''
+    })
+  }, [editProduct.imagesUrl.length])
 
   return (
     <>
