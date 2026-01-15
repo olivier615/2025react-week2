@@ -6,6 +6,6 @@ export const handleResponse = (message: string, icon: SwalIcon) => {
   Swal.fire({
     title: message,
     icon,
-    draggable: true,
+    draggable: false,
   })
 }

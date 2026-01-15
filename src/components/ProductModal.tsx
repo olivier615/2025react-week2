@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import axios from "axios";
 import type {
   ProductData,
 } from "../types/product"
@@ -10,6 +11,11 @@ import {
   apiCreateProduct,
   apiEditProduct
 } from "../apis/product";
+
+import type { ApiErrorResponse } from "../types/user";
+
+import { handleResponse } from '../utils/responseMessage'
+
 
 const initialEditProduct: CreateProductParams = {
   title: '',
@@ -60,7 +66,7 @@ export const ProductModal = ({ closeModal, productEditState, tempProduct, onEdit
   const addNewUrl = () => {
     if (imageUrlInput === '') return
     if (!isURL(imageUrlInput)) {
-      alert('錯誤的 Url')
+      handleResponse('錯誤的 Url', 'warning')
     } else {
       setEditProduct({
         ...editProduct,
@@ -83,12 +89,20 @@ export const ProductModal = ({ closeModal, productEditState, tempProduct, onEdit
 
   const handelAddNewProduct = async () => {
     try {
-      await apiCreateProduct(editProduct)
+      const response = await apiCreateProduct(editProduct)
       setEditProduct(initialEditProduct)
+      handleResponse(response.data.message, 'success')
       closeModal()
       onEdited()
-    } catch (error) {
-      console.log(error)
+    } catch (error: unknown) {
+      if (axios.isAxiosError<ApiErrorResponse>(error)) {
+        handleResponse(
+          error.response?.data.message ?? '新增產品失敗',
+          'warning'
+        )
+      } else {
+        handleResponse('未知錯誤', 'error')
+      }
     }
   }
 
@@ -99,10 +113,18 @@ export const ProductModal = ({ closeModal, productEditState, tempProduct, onEdit
         id: tempProduct.id,
         data: editProduct
       })
+      handleResponse(response.data.message, 'success')
       closeModal()
       onEdited()
-    } catch (error) {
-      console.log(error)
+    } catch (error: unknown) {
+      if (axios.isAxiosError<ApiErrorResponse>(error)) {
+        handleResponse(
+          error.response?.data.message ?? '編輯產品失敗',
+          'warning'
+        )
+      } else {
+        handleResponse('未知錯誤', 'error')
+      }
     }
   }
 
@@ -155,7 +177,6 @@ export const ProductModal = ({ closeModal, productEditState, tempProduct, onEdit
             <div className="modal-header bg-dark text-white">
               <h5 id="productModalLabel" className="modal-title">
                 <span>{productEditState === 'new' ? '新增產品' : '編輯產品'}</span>
-                {productEditState === 'new'? '' : tempProduct?.id}
               </h5>
               <button
                 type="button"

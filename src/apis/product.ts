@@ -35,7 +35,7 @@ productApi.interceptors.response.use(
     return Promise.resolve(response)
   },
   (error) => {
-    return Promise.reject(error.response.data)
+    return Promise.reject(error)
   },
 )
 

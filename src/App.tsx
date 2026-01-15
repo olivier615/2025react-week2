@@ -1,5 +1,8 @@
 import { useEffect, useState, useRef } from "react";
-import type { UserLogInFormData } from "./types/user";
+import type {
+  UserLogInFormData,
+  ApiErrorResponse
+} from "./types/user";
 import type {
   ProductData,
 } from "./types/product"
@@ -24,14 +27,14 @@ function App() {
     password: "",
   })
 
-  const [isAuth, setIsAuth] = useState<boolean>(true)
+  const [isAuth, setIsAuth] = useState<boolean>(false)
   const [productEditState, setProductEditState] = useState<'new' | 'edit'>('new')
   const [products, setProducts] = useState<ProductData[]>([])
   const [tempProduct, setTempProduct] = useState<ProductData | null>(null)
   const productModalRef = useRef<bootstrap.Modal | null>(null)
 
   const handleSubmit = async (
-    event: React.ChangeEvent<HTMLFormElement>
+    event: React.FormEvent<HTMLFormElement>
   ) => {
     event.preventDefault();
     try {
@@ -42,8 +45,15 @@ function App() {
       axios.defaults.headers.common.Authorization = token
       setIsAuth(true)
       getProducts()
-    } catch (error) {
-      console.log(error)
+    } catch (error: unknown) {
+      if (axios.isAxiosError<ApiErrorResponse>(error)) {
+        handleResponse(
+          error.response?.data.message ?? '登入失敗',
+          'warning'
+        )
+      } else {
+        handleResponse('未知錯誤', 'error')
+      }
     }
   }
 
@@ -59,8 +69,15 @@ function App() {
     try {
       const response = await apiGetProducts()
       setProducts(response.data.products)
-    } catch (error) {
-      console.log(error)
+    } catch (error: unknown) {
+      if (axios.isAxiosError<ApiErrorResponse>(error)) {
+        handleResponse(
+          error.response?.data.message ?? '無法取得產品資料，請稍後再試',
+          'warning'
+        )
+      } else {
+        handleResponse('未知錯誤', 'error')
+      }
     }
   }
 
@@ -69,8 +86,15 @@ function App() {
       const response = await apiCheckLoginStatus()
       console.log(response.data)
       if (!response.data.success) setIsAuth(false)
-    } catch (error) {
-      console.log(error)
+    } catch (error: unknown) {
+      if (axios.isAxiosError<ApiErrorResponse>(error)) {
+        handleResponse(
+          error.response?.data.message ?? '出了點問題，等等再試試看!',
+          'warning'
+        )
+      } else {
+        handleResponse('未知錯誤', 'error')
+      }
     }
   }
 
@@ -101,7 +125,6 @@ function App() {
 
   return (
     <>
-      <button type="button" onClick={getProducts}>拉拉拉拉</button>
       <button type="button" className="btn btn-outline-danger mt-2 ms-2" onClick={checkLoginStatus}>檢查登入狀態</button>
       {isAuth ? (
         <div className="container">

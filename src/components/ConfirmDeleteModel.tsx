@@ -1,8 +1,6 @@
 import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import { apiDeleteProduct } from '../apis/product'
 
-const MySwal = withReactContent(Swal)
 
 type ConfirmDeleteModalProps = {
   productId: string
