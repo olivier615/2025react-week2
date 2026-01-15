@@ -31,11 +31,11 @@ export const ConfirmDeleteModel = ({
 
     const result = await swalWithBootstrapButtons.fire({
       title: '確定刪除產品?',
-      text: `${productTitle}: ${productId}`,
+      text: `即將刪除: ${productTitle}`,
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'No, cancel!',
+      confirmButtonText: '刪除',
+      cancelButtonText: '取消',
       reverseButtons: true,
     })
 

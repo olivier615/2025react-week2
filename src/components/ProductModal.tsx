@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
 import type {
+  ProductData,
+} from "../types/product"
+import type {
   CreateProductParams
 } from "../types/product"
 
 import {
-  apiCreateProduct
+  apiCreateProduct,
+  apiEditProduct
 } from "../apis/product";
 
 const initialEditProduct: CreateProductParams = {
@@ -20,13 +24,17 @@ const initialEditProduct: CreateProductParams = {
   imagesUrl: [],
 }
 type ProductModalProps = {
-  closeModal: () => void
+  closeModal: () => void,
+  productEditState: 'new' | 'edit',
+  tempProduct: ProductData | null,
+  onEdited:  () => void
 }
 
-export const ProductModal = ({ closeModal }: ProductModalProps) => {
-  
+export const ProductModal = ({ closeModal, productEditState, tempProduct, onEdited }: ProductModalProps) => {
   const [imageUrlInput, setImageUrlInput] = useState<string>('')
   const [editProduct, setEditProduct] = useState<CreateProductParams>(initialEditProduct)
+
+
   const handleModalInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = event.target;
     setEditProduct({
@@ -78,17 +86,61 @@ export const ProductModal = ({ closeModal }: ProductModalProps) => {
       await apiCreateProduct(editProduct)
       setEditProduct(initialEditProduct)
       closeModal()
+      onEdited()
     } catch (error) {
       console.log(error)
     }
   }
 
-    useEffect(() => {
-    setEditProduct({
-      ...editProduct,
-      imageUrl: editProduct.imagesUrl.length > 0 ? editProduct.imagesUrl[0] : ''
-    })
+  const handleEditProduct = async () => {
+    if (!tempProduct?.id) return
+    try {
+      const response = await apiEditProduct({
+        id: tempProduct.id,
+        data: editProduct
+      })
+      closeModal()
+      onEdited()
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const handelModalSubmit = () => {
+    if (productEditState === 'new') {
+      handelAddNewProduct()
+    } else {
+      handleEditProduct()
+    }
+  }
+
+  useEffect(() => {
+    setEditProduct(prev => ({
+      ...prev,
+      imageUrl: prev.imagesUrl.length > 0 ? prev.imagesUrl[0] : '',
+    }))
   }, [editProduct.imagesUrl.length])
+
+  useEffect(() => {
+  if (productEditState === 'edit' && tempProduct) {
+    setEditProduct({
+      title: tempProduct.title,
+      category: tempProduct.category,
+      origin_price: tempProduct.origin_price,
+      price: tempProduct.price,
+      unit: tempProduct.unit,
+      description: tempProduct.description,
+      content: tempProduct.content,
+      is_enabled: tempProduct.is_enabled,
+      imageUrl: tempProduct.imageUrl,
+      imagesUrl: tempProduct.imagesUrl ?? [],
+    })
+  }
+
+  if (productEditState === 'new') {
+    setEditProduct(initialEditProduct)
+  }
+}, [productEditState, tempProduct])
 
   return (
       <div
@@ -102,7 +154,8 @@ export const ProductModal = ({ closeModal }: ProductModalProps) => {
           <div className="modal-content border-0">
             <div className="modal-header bg-dark text-white">
               <h5 id="productModalLabel" className="modal-title">
-                <span>新增產品</span>
+                <span>{productEditState === 'new' ? '新增產品' : '編輯產品'}</span>
+                {productEditState === 'new'? '' : tempProduct?.id}
               </h5>
               <button
                 type="button"
@@ -261,7 +314,7 @@ export const ProductModal = ({ closeModal }: ProductModalProps) => {
               >
                 取消
               </button>
-              <button onClick={handelAddNewProduct} type="button" className="btn btn-primary">確認</button>
+              <button onClick={handelModalSubmit} type="button" className="btn btn-primary">確認</button>
             </div>
           </div>
         </div>

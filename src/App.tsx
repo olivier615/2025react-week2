@@ -14,7 +14,8 @@ import {
 } from "./apis/product";
 
 import { ProductModal } from './components/ProductModal'
-import { ConfirmDeleteModel } from './components/confirmDeleteModel'
+import { ConfirmDeleteModel } from './components/ConfirmDeleteModel'
+import { handleResponse } from './utils/responseMessage'
 
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
   })
 
   const [isAuth, setIsAuth] = useState<boolean>(true)
+  const [productEditState, setProductEditState] = useState<'new' | 'edit'>('new')
   const [products, setProducts] = useState<ProductData[]>([])
   const [tempProduct, setTempProduct] = useState<ProductData | null>(null)
   const productModalRef = useRef<bootstrap.Modal | null>(null)
@@ -72,18 +74,15 @@ function App() {
     }
   }
 
-  const openProductModal = async () => {
+  const openProductModal = async (mode: 'new' | 'edit', product: ProductData | null) => {
+    setProductEditState(mode)
+    if (mode === 'edit') setTempProduct(product)
     productModalRef.current?.show()
   }
 
   const closeModal = async () => {
     productModalRef.current?.hide()
   }
-
-  const handleProductDeleted = () => {
-    getProducts()
-  }
-
 
   useEffect(() => {
     const token = document.cookie.replace(
@@ -110,7 +109,7 @@ function App() {
             <div className="col-md-6">
               <h2>產品列表</h2>
               <div className="text-end">
-                <button onClick={openProductModal} type="button" className="btn btn-primary ">新增產品</button>
+                <button onClick={() => openProductModal('new', null)} type="button" className="btn btn-primary ">新增產品</button>
               </div>
               <table className="table">
                 <thead>
@@ -131,24 +130,25 @@ function App() {
                         <td>{product.price}</td>
                         <td>{product.is_enabled ? "啟用" : "未啟用"}</td>
                         <td>
+                          <div className="btn-group">
                           <button
-                            className="btn btn-primary"
+                            type="button"
+                            className="btn btn-outline-primary btn-sm"
                             onClick={() => setTempProduct(product)}
                           >
-                            查看細節
+                            查看
                           </button>
-                          <div className="btn-group">
-                            <button type="button" className="btn btn-outline-primary btn-sm">
+                            <button
+                            type="button" className="btn btn-outline-primary btn-sm"
+                            onClick={() => openProductModal('edit', product)}
+                            >
                               編輯
                             </button>
                             <ConfirmDeleteModel
                             productId={product.id}
                             productTitle={product.title}
-                            onDeleted={handleProductDeleted}
+                            onDeleted={getProducts}
                             />
-                            <button type="button" className="btn btn-outline-danger btn-sm">
-                              刪除
-                            </button>
                           </div>
                         </td>
                       </tr>
@@ -253,7 +253,12 @@ function App() {
           <p className="mt-5 mb-3 text-muted">&copy; 2024~∞ - 六角學院</p>
         </div>
       )}
-      <ProductModal closeModal={closeModal} />
+      <ProductModal
+        closeModal={closeModal}
+        productEditState={productEditState}
+        tempProduct={tempProduct}
+        onEdited={getProducts}
+      />
     </>
   );
 }
