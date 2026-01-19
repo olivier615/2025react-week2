@@ -43,12 +43,12 @@ export const ProductModal = ({ closeModal, productEditState, tempProduct, onEdit
 
   const handleModalInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = event.target;
-    setEditProduct({
-      ...editProduct,
+    setEditProduct((prevData) => ({
+      ...prevData,
       [id]: id === 'origin_price' || id === 'price'
       ? Number(value)
       : value
-    })
+    }))
   }
 
   const handleIsEnabled = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -318,6 +318,7 @@ export const ProductModal = ({ closeModal, productEditState, tempProduct, onEdit
                         className="form-check-input"
                         type="checkbox"
                         onChange={handleIsEnabled}
+                        checked={editProduct.is_enabled === 1}
                       />
                       <label className="form-check-label" htmlFor="is_enabled">
                         是否啟用

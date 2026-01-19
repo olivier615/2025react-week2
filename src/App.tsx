@@ -27,7 +27,7 @@ function App() {
     password: "",
   })
 
-  const [isAuth, setIsAuth] = useState<boolean>(false)
+  const [isAuth, setIsAuth] = useState<boolean>(true)
   const [productEditState, setProductEditState] = useState<'new' | 'edit'>('new')
   const [products, setProducts] = useState<ProductData[]>([])
   const [tempProduct, setTempProduct] = useState<ProductData | null>(null)
@@ -59,10 +59,10 @@ function App() {
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = event.target;
-    setFormData({
-      ...formData,
-      [id]: value,
-    })
+    setFormData((prevData) => ({
+      ...prevData,
+      [id]: value
+    }))
   }
 
   const getProducts = async () => {
@@ -84,8 +84,11 @@ function App() {
   const checkLoginStatus = async () => {
     try {
       const response = await apiCheckLoginStatus()
-      console.log(response.data)
-      if (!response.data.success) setIsAuth(false)
+      if (!response.data.success) {
+        setIsAuth(false)
+      } else {
+        getProducts()
+      }
     } catch (error: unknown) {
       if (axios.isAxiosError<ApiErrorResponse>(error)) {
         handleResponse(
@@ -113,12 +116,25 @@ function App() {
       /(?:(?:^|.*;\s*)hexToken\s*=\s*([^;]*).*$)|^.*$/,
       "$1"
     )
-    axios.defaults.headers.common.Authorization = token
-    checkLoginStatus()
     axios.defaults.headers.common.Authorization = token;
+    checkLoginStatus()
+    const el = document.getElementById('productModal')
+    if (!el) return
     productModalRef.current = new bootstrap.Modal('#productModal', {
       keyboard: false
     })
+    const handleHide = () => {
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur()
+      }
+    }
+
+    el.addEventListener('hide.bs.modal', handleHide)
+    return () => {
+      el.removeEventListener('hide.bs.modal', handleHide)
+      productModalRef.current?.dispose()
+      productModalRef.current = null
+    }
   }, [])
 
 
@@ -242,6 +258,7 @@ function App() {
                 <div className="form-floating mb-3">
                   <input
                     type="email"
+                    name="email"
                     className="form-control"
                     id="username"
                     placeholder="name@example.com"
@@ -255,6 +272,7 @@ function App() {
                 <div className="form-floating">
                   <input
                     type="password"
+                    name="password"
                     className="form-control"
                     id="password"
                     placeholder="Password"
