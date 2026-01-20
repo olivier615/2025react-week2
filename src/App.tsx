@@ -95,8 +95,10 @@ function App() {
           error.response?.data.message ?? '出了點問題，等等再試試看!',
           'warning'
         )
+        setIsAuth(false)
       } else {
         handleResponse('未知錯誤', 'error')
+        setIsAuth(false)
       }
     }
   }

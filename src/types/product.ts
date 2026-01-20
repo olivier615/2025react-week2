@@ -65,3 +65,7 @@ type MessageResponse = {
 export type CreateProductResponse = MessageResponse
 export type EditProductResponse = MessageResponse
 export type DeleteProductResponse = MessageResponse
+export type UploadImageResponse = {
+  success: boolean
+  imageUrl: string
+}

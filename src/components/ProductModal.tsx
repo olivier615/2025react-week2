@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "axios"
 import type {
   ProductData,
 } from "../types/product"
@@ -12,9 +12,12 @@ import {
   apiEditProduct
 } from "../apis/product";
 
-import type { ApiErrorResponse } from "../types/user";
+import type { ApiErrorResponse } from "../types/user"
 
 import { handleResponse } from '../utils/responseMessage'
+
+import { ImageInput } from '../components/ImageInput'
+import { ImageCard } from '../components/ImageCard'
 
 
 const initialEditProduct: CreateProductParams = {
@@ -136,6 +139,8 @@ export const ProductModal = ({ closeModal, productEditState, tempProduct, onEdit
     }
   }
 
+  const onUploaded = (url: string) => setImageUrlInput(url)
+
   useEffect(() => {
     setEditProduct(prev => ({
       ...prev,
@@ -189,6 +194,7 @@ export const ProductModal = ({ closeModal, productEditState, tempProduct, onEdit
               <div className="row">
                 <div className="col-sm-4">
                   <div className="mb-2">
+                    <ImageInput onUploaded={onUploaded} />
                     <div>
                       <label htmlFor="imageUrl" className="form-label">
                         輸入圖片網址
@@ -211,16 +217,12 @@ export const ProductModal = ({ closeModal, productEditState, tempProduct, onEdit
                   </div>
                   {
                     editProduct.imagesUrl.map((url: string, index: number) => {
-                      return (<div className="my-2" key={`${index}:${url}`}>
-                      <img className="img-fluid mb-1"  src={url} alt="" />
-                        <div>
-                          <button className="btn btn-outline-danger btn-sm d-block w-100"
-                          onClick={() => deleteUrl(index)}
-                          >
-                            刪除圖片
-                          </button>
-                        </div>
-                      </div>
+                      return (
+                        <ImageCard
+                        key={`${index}:${url}`}
+                        url={url}
+                        onDelete={() => deleteUrl(index)}
+                        />
                       )
                     })
                   }

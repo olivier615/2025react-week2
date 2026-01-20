@@ -6,7 +6,8 @@ import type {
   CreateProductParams,
   DeleteProductResponse,
   EditProductParams,
-  EditProductResponse
+  EditProductResponse,
+  UploadImageResponse
 } from '../types/product'
 
 const API_BASE = import.meta.env.VITE_API_BASE;
@@ -55,3 +56,6 @@ export const apiCreateProduct = (params: CreateProductParams): Promise<AxiosResp
     data,
   })
 }
+
+export const apiUploadImage = async (file: FormData): Promise<AxiosResponse<UploadImageResponse>> =>
+  productApi.post(`/api/${API_PATH}/admin/upload`, file)
