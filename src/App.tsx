@@ -2,11 +2,11 @@ import { useEffect, useState, useRef } from "react";
 import type {
   UserLogInFormData,
   ApiErrorResponse
-} from "./types/user";
+} from "./types/user"
 import type {
   ProductData,
 } from "./types/product"
-import axios from "axios";
+import axios from "axios"
 import * as bootstrap from 'bootstrap'
 import {
   apiUserLogin,
@@ -14,7 +14,7 @@ import {
 } from "./apis/user"
 import {
   apiGetProducts,
-} from "./apis/product";
+} from "./apis/product"
 
 import { ProductModal } from './components/ProductModal'
 import { ConfirmDeleteModel } from './components/ConfirmDeleteModel'
@@ -24,9 +24,8 @@ import { handleResponse } from './utils/responseMessage'
 function App() {
   const [formData, setFormData] = useState<UserLogInFormData>({
     username: "",
-    password: "",
+    password: ""
   })
-
   const [isAuth, setIsAuth] = useState<boolean>(true)
   const [productEditState, setProductEditState] = useState<'new' | 'edit'>('new')
   const [products, setProducts] = useState<ProductData[]>([])
@@ -147,7 +146,7 @@ function App() {
       {isAuth ? (
         <div className="container">
           <div className="row mt-5">
-            <div className="col-md-6">
+            <div className="col-md-12">
               <h2>產品列表</h2>
               <div className="text-end">
                 <button onClick={() => openProductModal('new', null)} type="button" className="btn btn-primary ">新增產品</button>
@@ -172,13 +171,13 @@ function App() {
                         <td>{product.is_enabled ? "啟用" : "未啟用"}</td>
                         <td>
                           <div className="btn-group">
-                          <button
+                          {/* <button
                             type="button"
                             className="btn btn-outline-primary btn-sm"
                             onClick={() => setTempProduct(product)}
                           >
                             查看
-                          </button>
+                          </button> */}
                             <button
                             type="button" className="btn btn-outline-primary btn-sm"
                             onClick={() => openProductModal('edit', product)}
@@ -202,7 +201,7 @@ function App() {
                 </tbody>
               </table>
             </div>
-            <div className="col-md-6">
+            {/* <div className="col-md-6">
               <h2>單一產品細節</h2>
               {tempProduct ? (
                 <div className="card mb-3">
@@ -244,7 +243,7 @@ function App() {
               ) : (
                 <p className="text-secondary">請選擇一個商品查看</p>
               )}
-            </div>
+            </div> */}
           </div>
         </div>
       ) : (

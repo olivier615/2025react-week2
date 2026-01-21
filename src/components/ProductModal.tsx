@@ -83,10 +83,12 @@ export const ProductModal = ({ closeModal, productEditState, tempProduct, onEdit
   }
 
   const deleteUrl = (index: number) => {
-    setEditProduct({
-      ...editProduct,
-      imagesUrl: editProduct.imagesUrl.filter((_: string, i: number) => i !== index),
-    })
+    setEditProduct((prevData) => ({
+        ...prevData,
+        imageUrl: prevData.imagesUrl[index] === prevData.imageUrl ? '' : prevData.imageUrl,
+        imagesUrl: prevData.imagesUrl.filter((_: string, i: number) => i !== index),
+      })
+    )
   }
 
 
@@ -107,6 +109,13 @@ export const ProductModal = ({ closeModal, productEditState, tempProduct, onEdit
         handleResponse('未知錯誤', 'error')
       }
     }
+  }
+
+  const setMainImage = (index: number) => {
+    setEditProduct({
+      ...editProduct,
+      imageUrl: editProduct.imagesUrl[index]
+    })
   }
 
   const handleEditProduct = async () => {
@@ -142,10 +151,12 @@ export const ProductModal = ({ closeModal, productEditState, tempProduct, onEdit
   const onUploaded = (url: string) => setImageUrlInput(url)
 
   useEffect(() => {
-    setEditProduct(prev => ({
-      ...prev,
-      imageUrl: prev.imagesUrl.length > 0 ? prev.imagesUrl[0] : '',
-    }))
+    if (editProduct.imageUrl === '') {
+      setEditProduct(prev => ({
+        ...prev,
+        imageUrl: prev.imagesUrl.length > 0 ? prev.imagesUrl[0] : '',
+      }))
+    }
   }, [editProduct.imagesUrl.length])
 
   useEffect(() => {
@@ -222,6 +233,7 @@ export const ProductModal = ({ closeModal, productEditState, tempProduct, onEdit
                         key={`${index}:${url}`}
                         url={url}
                         onDelete={() => deleteUrl(index)}
+                        onSetMainImage={() => setMainImage(index)}
                         />
                       )
                     })
@@ -326,6 +338,13 @@ export const ProductModal = ({ closeModal, productEditState, tempProduct, onEdit
                         是否啟用
                       </label>
                     </div>
+                  </div>
+                  <div className="mb-3 card p-3 w-50">
+                    <p>主要圖片</p>
+                    { editProduct.imageUrl !== '' ? 
+                    <img className="img-fluid mb-1"  src={editProduct.imageUrl} alt={editProduct.imageUrl} />
+                    : ''
+                    }
                   </div>
                 </div>
               </div>
