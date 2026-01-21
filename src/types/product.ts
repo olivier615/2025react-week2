@@ -42,7 +42,7 @@ export type EditProductParams = {
   }
 }
 
-export type Pagination = {
+export type TPagination = {
   total_pages: number
   current_page: number
   has_pre: boolean
@@ -53,7 +53,7 @@ export type Pagination = {
 export type GetProductsResponse = {
   success: boolean
   products: ProductData[]
-  pagination: Pagination
+  pagination: TPagination
   messages: string[]
 }
 

@@ -40,7 +40,9 @@ productApi.interceptors.response.use(
   },
 )
 
-export const apiGetProducts = (): Promise<AxiosResponse<GetProductsResponse>> => productApi.get(`/api/${API_PATH}/admin/products`)
+export const apiGetProducts = (params: { page?: number, category?: string }): Promise<AxiosResponse<GetProductsResponse>> => productApi.get(`/api/${API_PATH}/admin/products`, {
+  params
+})
 
 export const apiCreateProduct = (params: CreateProductParams): Promise<AxiosResponse<CreateProductResponse>> =>
   productApi.post(`/api/${API_PATH}/admin/product`, {
