@@ -1,3 +1,5 @@
+export type InstallationType = 'none' | 'negotiable' | 'free'
+
 export type ProductData = {
   category: string
   content: string
@@ -11,6 +13,7 @@ export type ProductData = {
   price: number
   title: string
   unit: string
+  installation: InstallationType
 }
 
 export type CreateProductParams = {
@@ -24,6 +27,7 @@ export type CreateProductParams = {
   is_enabled: number
   imageUrl: string
   imagesUrl: string[]
+  installation: InstallationType
 }
 
 export type EditProductParams = {
@@ -39,6 +43,7 @@ export type EditProductParams = {
     is_enabled: number
     imageUrl: string
     imagesUrl: string[]
+    installation: InstallationType
   }
 }
 

@@ -4,7 +4,8 @@ import type {
   ProductData,
 } from "../types/product"
 import type {
-  CreateProductParams
+  CreateProductParams,
+  InstallationType
 } from "../types/product"
 
 import {
@@ -19,6 +20,14 @@ import { handleResponse } from '../utils/responseMessage'
 import { ImageInput } from '../components/ImageInput'
 import { ImageCard } from '../components/ImageCard'
 
+const installationOptions: {
+  label: string,
+  value: InstallationType
+  }[] = [
+    { label: '無', value: 'none' },
+    { label: '需議價', value: 'negotiable' },
+    { label: '免費安裝', value: 'free' },
+  ]
 
 const initialEditProduct: CreateProductParams = {
   title: '',
@@ -31,6 +40,7 @@ const initialEditProduct: CreateProductParams = {
   is_enabled: 1,
   imageUrl: '',
   imagesUrl: [],
+  installation: 'none'
 }
 type ProductModalProps = {
   closeModal: () => void,
@@ -58,6 +68,13 @@ export const ProductModal = ({ closeModal, productEditState, tempProduct, onEdit
     setEditProduct({
       ...editProduct,
       is_enabled: event.target.checked ? 1 : 0
+    })
+  }
+
+  const handleInstallation = (value: InstallationType) => {
+    setEditProduct({
+      ...editProduct,
+      installation: value
     })
   }
 
@@ -172,6 +189,7 @@ export const ProductModal = ({ closeModal, productEditState, tempProduct, onEdit
       is_enabled: tempProduct.is_enabled,
       imageUrl: tempProduct.imageUrl,
       imagesUrl: tempProduct.imagesUrl ?? [],
+      installation: tempProduct.installation
     })
   }
 
@@ -303,6 +321,26 @@ export const ProductModal = ({ closeModal, productEditState, tempProduct, onEdit
                       />
                     </div>
                   </div>
+                  <div className="mb-3">
+                    <p className="mb-0">到府安裝</p>
+                    {installationOptions.map(option => (
+                      <div className="form-check" key={option.value}>
+                        <input
+                          id={option.label}
+                          className="form-check-input"
+                          type="radio"
+                          name="installation"
+                          value={option.value}
+                          checked={editProduct.installation === option.value}
+                          onChange={() => handleInstallation(option.value)}
+                        />
+                        <label className="form-check-label" htmlFor={option.label}>
+                          {option.label}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+
                   <hr />
 
                   <div className="mb-3">

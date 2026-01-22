@@ -5,7 +5,8 @@ import type {
 } from "./types/user"
 import type {
   ProductData,
-  TPagination
+  TPagination,
+  InstallationType
 } from "./types/product"
 import axios from "axios"
 import * as bootstrap from 'bootstrap'
@@ -25,6 +26,11 @@ import { handleResponse } from './utils/responseMessage'
 
 
 function App() {
+  const installationLabelMap: Record<InstallationType, string> = {
+    none: '無須安裝',
+    negotiable: '需議價',
+    free: '免費安裝',
+  }
   const [formData, setFormData] = useState<UserLogInFormData>({
     username: "",
     password: ""
@@ -74,7 +80,7 @@ function App() {
     }))
   }
 
-  const getProducts = async (page: number = 1, category: string = '') => {
+  const getProducts = async (page: number = pagination.current_page, category: string = '') => {
     try {
       const response = await apiGetProducts({
         page, category
@@ -179,7 +185,7 @@ function App() {
                     <th>分類</th>
                     <th>原價</th>
                     <th>售價</th>
-                    <th>評價</th>
+                    <th>到府安裝</th>
                     <th>是否啟用</th>
                     <th>編輯</th>
                   </tr>
@@ -192,7 +198,11 @@ function App() {
                         <td>{product.category}</td>
                         <td>{product.origin_price}</td>
                         <td>{product.price}</td>
-                        <td>評價</td>
+                        <td className={`${product.installation ? '' : 'text-danger'}`}>
+                          {product.installation
+                          ? installationLabelMap[product.installation]
+                          : '未啟用'}
+                        </td>
                         <td className={`${product.is_enabled ? '' : 'text-danger'}`}>
                           {product.is_enabled ? "啟用" : "未啟用"}
                         </td>
